@@ -125,16 +125,16 @@
 
 ## 核心依赖
 
-- fp 精确识别用户设备
-- typecho 博客框架
-- jquery js网页开发工具
-- dplayer 开源弹幕视频播放器
-- aplayer 开源音乐播放器
-- rsshub 提供丰富的rss源
-- frp 提供内网穿透
-- docute 快速开发说明文档
-- handsome typecho博客主题
-- DPlayer-node 弹幕后端
+- [fp](https://github.com/IoTcat/fp) 精确识别用户设备
+- [typecho](https://github.com/typecho/typecho) 博客框架
+- [jquery](https://github.com/jquery/jquery) js网页开发工具
+- [dplayer](https://github.com/MoePlayer/DPlayer) 开源弹幕视频播放器
+- [aplayer](https://github.com/MoePlayer/APlayer) 开源音乐播放器
+- [rsshub](https://github.com/DIYgod/RSSHub) 提供丰富的rss源
+- [frp](https://github.com/fatedier/frp) 提供内网穿透
+- [docute](https://github.com/egoist/docute) 快速开发说明文档
+- [handsome](https://github.com/ihewro/typecho-theme-handsome) typecho博客主题
+- [DPlayer-node](https://github.com/MoePlayer/DPlayer-node) 弹幕后端
 
 ## 使用的服务
 
