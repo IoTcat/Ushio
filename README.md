@@ -135,3 +135,25 @@
 - docute 快速开发说明文档
 - handsome typecho博客主题
 - DPlayer-node 弹幕后端
+
+## 使用的服务
+
+- 华为云 CDN
+- 华为云 对象存储
+- 华为云 分布式缓存 Redis
+- 华为云 云数据库 RDS
+- 华为云 弹性云服务器 ECS
+- 腾讯云 域名解析
+- 腾讯云 云通信 短信
+- 腾讯云 域名解析
+- 腾讯云 CDN
+- 腾讯云 云服务器
+- 腾讯云 无服务器云函数
+- 阿里云 轻量应用服务器
+- 阿里云 邮件推送
+- Github 代码托管服务
+- Vultr VPS
+- Godaddy 域名管理
+- internetbs 域名管理
+- UptimeRobot iis监视服务
+- onedrive 文件存储服务
