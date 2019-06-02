@@ -19,6 +19,7 @@
 |   |   |---YimianReading(追番/阅读记录)
 |   |   |---YimianYulu(记录自己的中二语录)
 |   |   |---WeiBlog(类似说说)
+|   |   |---YimianDev(开发记录)
 |   |
 |   |---HomePage(主页，引导作用)=SEO
 |   |   |
