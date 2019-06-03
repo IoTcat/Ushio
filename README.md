@@ -129,6 +129,7 @@
 
 ## 核心依赖
 
+- [CentOS7.6](https://www.centos.org/) 使用CentOS作为操作系统
 - [nodeJS](https://github.com/nodejs/node) 使用NodeJS驱动系统
 - [php](https://github.com/php/php-src) 使用php搭建iis服务端
 - [python](https://github.com/python/cpython) 使用python进行后端数据处理
