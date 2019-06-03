@@ -46,6 +46,7 @@
 |   |---YimianData(提供简易的大数据展示功能)
 |   |---YimianChat(简易的在线聊天平台)
 |   |---UshioFee(Ushio运行累计耗资统计)
+|   |---YimianSSR(翻墙服务管理界面)
 |
 |---|login(用户管理系统)
 |   |
