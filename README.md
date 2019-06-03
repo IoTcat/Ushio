@@ -129,7 +129,12 @@
 
 ## 核心依赖
 
+- [nodeJS](https://github.com/nodejs/node) 使用NodeJS驱动系统
+- [php](https://github.com/php/php-src) 使用php搭建iis服务端
+- [python](https://github.com/python/cpython) 使用python进行后端数据处理
+- [nginx](https://github.com/nginx/njs) 改装nginx作为代理
 - [fp](https://github.com/IoTcat/fp) 精确识别用户设备
+- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-libev) 流量代理系统
 - [typecho](https://github.com/typecho/typecho) 博客框架
 - [jquery](https://github.com/jquery/jquery) js网页开发工具
 - [dplayer](https://github.com/MoePlayer/DPlayer) 开源弹幕视频播放器
