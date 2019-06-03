@@ -153,6 +153,7 @@
 - 腾讯云 CDN
 - 腾讯云 云服务器
 - 腾讯云 无服务器云函数
+- 腾讯 企业邮箱
 - 阿里云 轻量应用服务器
 - 阿里云 邮件推送
 - Github 代码托管服务
@@ -161,3 +162,4 @@
 - internetbs 域名管理
 - UptimeRobot iis监视服务
 - onedrive 文件存储服务
+- GoogleAnalytics 站点访问统计
