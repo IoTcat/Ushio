@@ -21,6 +21,7 @@
 |   |---safe.yimian.xyz
 |   |---ssl.yimian.xyz
 |   |---dbkey.yimian.xyz
+|   |---nginx.yimian.xyz
 |   |---redis.yimian.xyz
 |   |---mqtt.yimian.xyz
 |   |---db.yimian.xyz
