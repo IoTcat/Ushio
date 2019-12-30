@@ -10,7 +10,66 @@
 - OpenSource
 - Smart
 
-## 系统架构
+## 系统架构（分布式）
+```
+|Ushio
+|
+|---|core
+|   |
+|   |---git.yimian.xyz
+|   |---docker.yimian.xyz
+|   |---safe.yimian.xyz
+|   |---ssl.yimian.xyz
+|   |---dbkey.yimian.xyz
+|   |---redis.yimian.xyz
+|   |---mqtt.yimian.xyz
+|   |---db.yimian.xyz
+|   |---backup.yimian.xyz
+|
+|---|service
+|   |
+|   |---token.yimian.xyz
+|   |---user.yimian.xyz
+|   |---api.yimian.xyz
+|   |---session.yimian.xyz
+|   |---frp.yimian.xyz
+|   |---ssr.yimian.xyz
+|   |---ota.yimian.xyz
+|   |---danmaku.yimian.xyz
+|   |---log.yimian.xyz
+|
+|---|app
+|   |
+|   |---login.yimian.xyz
+|   |---blog.yimian.xyz(www.eee.dog)
+|   |---chat.yimian.xyz
+|   |---home.yimian.xyz
+|   |---shorturl.yimian.xyz(eee.dog)
+|   |---cloud.yimian.xyz
+|   |---video.yimian.xyz(acg.watch)
+|   |---rss.yimian.xyz(www.eee.dog/feed)
+|   |---homepage.yimian.xyz
+|   |---img.yimian.xyz
+|   |---imgbed.yimian.xyz
+|   |---msc.yimian.xyz
+|   |---resume.yimian.xyz
+|   |---iot.yimian.xyz
+|   |---settlement.yimian.xyz
+|   |---ques.yimian.xyz(问卷系统)
+|   |---vpn.yimian.xyz
+|   |---data.yimian.xyz
+|   |---ai.yimian.xyz
+|   |---game.yimian.xyz
+|   |---translate.yimian.xyz
+|   |---search.yimian.xyz
+|   |---report.yimian.xyz
+|   |---monitor.yimian.xyz
+|   |---pay.yimian.xyz
+|
+
+```
+
+## 系统架构（旧）
 ```
 |Ushio
 |
