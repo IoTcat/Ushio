@@ -17,7 +17,7 @@ You can support Ushio development via the following methods:
 We accept donations through these channels:
 
 - [Paypal](https://www.paypal.me/iotcat)
-- [Alipay / WeChat Pay](https://cdn.yimian.xyz/yimian.pay/qrcode/3to1.png)
+- [Alipay / WeChat Pay](https://pay.yimian.xyz)
 - Bitcoin: 1MRAfEXsHTVYH8bHQ3J4fos3zs7Zj6oKWh
 
 
