@@ -1,1 +1,1 @@
-# Ushio - Distributed Information Support System
+# Ushio - Distributed Support System
