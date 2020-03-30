@@ -10,7 +10,14 @@
 - OpenSource
 - Smart
 
-## 系统架构（分布式）
+
+## 项目索引
+
+### 开发工具
+ - [裸机环境部署脚本](https://github.com/iotcat/ushio-centos-ini)
+
+
+## 服务分布（分布式）
 ```
 |Ushio
 |
