@@ -2,6 +2,8 @@ version: '3'
 services:
   nginx:
     image: iotcat/ushio-nginx
+    container_name: nginx
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -9,13 +11,32 @@ services:
       - "../../etc/jp.yimian.xyz/nginx/:/etc/nginx/"
       - "/var/log/nginx/:/var/log/nginx/"
       - "../../html/:/html/"
+    networks:
+      - default
+      - inner
   redis:
     image: redis
-# blog:
-#   image: yangxuan8282/typecho
-#   port : 
-#     - "10001:80"
-#   volume :
-#     - ""
-#   depend _on:
-#     - nginx
+    container_name: redis
+    restart: always
+    networks:
+      - inner
+  blog:
+    image: yangxuan8282/typecho
+    container_name: blog
+    restart: always
+#   ports:
+#     - "80:80"
+    volumes:
+      - "../../html/blog/:/var/www/html/"
+    tmpfs:
+      - /tmp
+    depends_on:
+      - nginx
+    networks:
+#     - inner
+      - default
+networks:
+  default:
+
+  inner:
+
