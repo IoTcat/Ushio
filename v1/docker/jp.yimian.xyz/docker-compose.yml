@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx:
+    image: iotcat/ushio-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "../../etc/jp.yimian.xyz/nginx/:/etc/nginx/"
+      - "/var/log/nginx/:/var/log/nginx/"
+      - "../../html/:/html/"
+  redis:
+    image: redis
+# blog:
+#   image: yangxuan8282/typecho
+#   port : 
+#     - "10001:80"
+#   volume :
+#     - ""
+#   depend _on:
+#     - nginx
