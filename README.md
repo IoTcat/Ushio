@@ -89,7 +89,7 @@ Ushio集群通过onedrive, mqtt分布式集群,以及Kafka消息队列（待实�
  - [iotcat.me](https://iotcat.me) iotcat主页
  - [acg.watch](https://acg.watch) acg视频网站
  - [monitor.yimian.xyz](https://monitor.yimian.xyz) 提供服务器监视服务
- - [mqtt.yimian.xyz](https://mqtt.yimian.xyz) 提供mqtt通信服务
+ - mqtt.yimian.xyz 提供mqtt通信服务
 
 
 
