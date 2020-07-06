@@ -1,6 +1,30 @@
 # Ushio
 汐 - 分布式信息支持系统  
 
+## 项目由来
+Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第一工作室遭人纵火，最温柔的一群人受到了最残忍的对待。我所能做的，只有将其所传达的精神传递下去。希望借助Ushio系统，去找到真实的自己。去找到真正属于我的责任；去找到真正属于我的幸福；去找到真正值得我全力以赴的那个人，那些人。
+
+## 项目定位
+汐，黄昏时刻的涌水。Ushio系统的设想是，可以分布式地弹性地部署在各种设备上，为我的开发行为提供工具集，运行环境，以及维护途径。如果说我所开发的诸种服务相互之间的依赖关系是一张蜘蛛网，那么Ushio系统就是这张网的构架者和维护者。此外，有一些Ushio接口通过API形式，向公众开发。详见[iotcat/ushio-api](https://github.com/iotcat/ushio-api)。
+
+## 实现方法
+
+### 第一代ushio [iotcat/ushio-cn-old:old](https://github.com/IoTcat/Ushio-cn-old/tree/old)
+第一次架构完成于2019年7月，是由Ushio用户运行的，集成在cn.yimian.xyz服务器的CentOS7系统上的一系列应用程序。此时，仍然使用主机的文件系统。
+
+### 第二代ushio [iotcat/ushio-linux](https://github.com/IoTcat/ushio-linux)
+第二次重构完成于2020年3月，是由Ushio用户运行的，以onedrive作为文件系统，以本机为缓存系统，有独立的系统分区和权限隔离的Linux子系统。
+
+### 第三代ushio [iotcat/ushio-cn](https://github.com/iotcat/ushio-cn)
+第三次重构完成于2020年6月，是由root用户运行的，以onedrive作为文件系统，以本机为缓存系统，由docker-compose控制的docker集群。
+
+
+
+## 一键部署
+
+目前支持CentOS7的一键脚本部署。实现了可以自动化和无人值守的扩展服务器。比如，如果需要，我现在可以在十分钟内（前提网络好）新填一台日本或其他国家的Ushio服务器，并开始提供服务。脚本详见[iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
+
+
 ## 设计理念
 - Reliable
 - Fast
@@ -16,11 +40,255 @@
 
 ## 项目索引
 
-### 开发工具
- - [裸机环境部署脚本](https://github.com/iotcat/ushio-centos-ini)
 
 
-## 服务分布（分布式）
+## 系统架构（第三代）
+```yml
+version: '3'
+services:
+
+# system-level services
+#--------------------------------
+  nginx:
+    image: iotcat/ushio-nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/mnt/etc/cn.yimian.xyz/nginx/:/etc/nginx/"
+      - "/mnt/:/mnt/"
+      - "/var/log/nginx/:/var/log/nginx/"
+      - "/home/www/:/home/www/"
+    #network_mode: "host"
+    depends_on:
+      - oneindex
+      - php-fpm
+      - frps
+      - session
+      - acg.watch-api
+      - serverstatus
+      - ushio-win-server
+      - danmaku-api
+      - coro-api
+      - todo-ddl-api
+      - upload-api
+    networks:
+      - default
+      - php_net
+      - frp_net
+
+  dns:
+    image: strm/dnsmasq
+    restart: always
+    volumes:
+      - /mnt/config/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
+      - /mnt/config/dnsmasq/dnsmasq.d/:/etc/dnsmasq.d/
+      - /mnt/config/dnsmasq/hosts.conf:/etc/hosts.conf
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - dns_net
+
+# Database
+#----------------------------------
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    volumes:
+      - "/tmp/redis/data/:/data/"
+    ports:
+      - "6379:6379"
+    networks:
+      - redis_net
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    volumes:
+      - "/var/mongo:/data/db"
+    networks:
+      - mongo_net
+
+
+# app-level services
+# --------------------------------------
+  php-fpm:
+    container_name: php-fpm
+    image: crunchgeek/php-fpm:7.3
+    restart: always
+    volumes:
+      - "/home/:/home/"
+      - "/mnt/:/mnt/"
+    networks:
+      - php_net
+  frps:
+    image: snowdreamtech/frps
+    container_name: frps
+    restart: always
+    volumes:
+      - "/mnt/config/frp/frps.ini:/etc/frp/frps.ini"
+    ports:
+      - "4480:4480"
+      - "4443:4443"
+      - "4477:4477"
+      - "4400-4440:4400-4440"
+    networks:
+      - frp_net
+  emqx:
+    image: emqx/emqx
+    container_name: emqx
+    restart: always
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "8883:8883"
+      - "8084:8084"
+      - "18083:18083"
+    networks:
+      - mqtt_net
+  monitor:
+    #build: https://github.com/iotcat/ushio-monitor.git
+    image: iotcat/ushio-monitor
+    container_name: monitor
+    restart: always
+    command: USER=cn.yimian.xyz
+    network_mode: "host"
+
+
+# common apps
+# -------------------------------------
+  oneindex:
+    image: iotcat/oneindex
+    container_name: oneindex
+    restart: always
+    volumes:
+      - "/mnt/config/oneindex/:/var/www/html/config/"
+    healthcheck:
+      test: /bin/bash /healthcheck.sh
+      interval: 1m
+      timeout: 10s
+      retries: 3
+
+  session:
+    #build: https://github.com/iotcat/ushio-session.git
+    image: iotcat/ushio-session
+    container_name: session
+    restart: always
+    networks:
+      - default
+      - redis_net
+  acg.watch-api:
+    #build: https://github.com/iotcat/acg.watch-api.git
+    image: iotcat/acg.watch-api
+    container_name: acg.watch-api
+    restart: always
+    volumes:
+      - "/mnt/cache/video/:/mnt/cache/video/"
+ 
+
+
+
+# local apps
+# ---------------------------------------
+  serverstatus:
+    image: cppla/serverstatus
+    container_name: serverstatus
+    restart: always
+    volumes:
+      - "/mnt/config/serverstatus/config.json:/ServerStatus/server/config.json"
+    ports:
+      - "35601:35601"
+  ushio-win-server:
+    #build: https://github.com/iotcat/ushio-win-server.git
+    image: iotcat/ushio-win-server
+    container_name: ushio-win-server
+    restart: always
+  kms:
+    #build: https://github.com/iotcat/kms-dockcer.git
+    image: iotcat/kms
+    container_name: kms
+    restart: always
+    ports:
+      - "1688:1688"
+  bingimgupdate-opt:
+    #build: https://github.com/iotcat/bingUpdateImg-opt.git
+    image: iotcat/bingimgupdate-opt
+    container_name: bingimgupdate-opt
+    restart: always
+    volumes:
+      - "/mnt/config/token/huaweicloud/:/mnt/config/token/huaweicloud/"
+      - "/tmp/:/tmp/"
+  danmaku-api:
+    #build: https://github.com/iotcat/danmaku-api.git
+    image: iotcat/danmaku-api
+    container_name: danmaku-api
+    restart: always
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - default
+      - redis_net
+      - mongo_net
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      MONGO_HOST: "mongo"
+      MONGO_PORT: 27017
+      MONGO_DATABASE: "danmaku"
+    volumes:
+      - /var/log/danmaku-api/app:/usr/src/app/logs
+      - /var/log/danmaku-api/pm2:/root/.pm2/logs
+  coro-api:
+    #build: https://github.com/iotcat/coro-api.git
+    image: iotcat/coro-api
+    container_name: coro-api
+    restart: always
+  todo-ddl-api:
+    #build: https://github.com/iotcat/todo-ddl-api.git
+    image: iotcat/todo-ddl-api
+    container_name: todo-ddl-api
+    restart: always
+    volumes:
+      - "/mnt/var/todo-ddl/:/mnt/var/todo-ddl/"
+  upload-api:
+    #build: https://github.com/IoTcat/upload-api.git
+    image: iotcat/upload-api
+    container_name: upload-api
+    restart: always
+    volumes:
+      - "/mnt/config/token/huaweicloud/:/mnt/config/token/huaweicloud/"
+    tmpfs:
+      - /tmp
+
+    
+    
+# networks setting
+# ------------------------------------
+networks:
+  default:
+
+  dns_net:
+
+  redis_net:
+
+  mongo_net:
+
+  php_net:
+
+  frp_net:
+
+  mqtt_net:
+
+```
+
+## 系统架构（第二代）
 ```
 |Ushio
 |
@@ -80,7 +348,7 @@
 
 ```
 
-## 系统架构（旧）
+## 系统架构（第一代）
 ```
 |Ushio
 |
