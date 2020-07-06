@@ -19,7 +19,6 @@ Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第�
 第三次重构完成于2020年6月，是由root用户运行的，以onedrive作为文件系统，以本机为缓存系统，由docker-compose控制的docker集群。
 
 
-
 ## 一键部署
 
 目前支持CentOS7的一键脚本部署。实现了可以自动化和无人值守的扩展服务器。比如，如果需要，我现在可以在十分钟内（前提网络好）新填一台日本或其他国家的Ushio服务器，并开始提供服务。脚本详见[iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
@@ -37,256 +36,115 @@ Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第�
 ## 观点
  - 考虑到量子计算发展，将主要使用AES256，减少RSA使用
 
+# 架构及标准
 
-## 项目索引
+## 文件系统
 
-
-
-## 系统架构（第三代）
-```yml
-version: '3'
-services:
-
-# system-level services
-#--------------------------------
-  nginx:
-    image: iotcat/ushio-nginx
-    container_name: nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/mnt/etc/cn.yimian.xyz/nginx/:/etc/nginx/"
-      - "/mnt/:/mnt/"
-      - "/var/log/nginx/:/var/log/nginx/"
-      - "/home/www/:/home/www/"
-    #network_mode: "host"
-    depends_on:
-      - oneindex
-      - php-fpm
-      - frps
-      - session
-      - acg.watch-api
-      - serverstatus
-      - ushio-win-server
-      - danmaku-api
-      - coro-api
-      - todo-ddl-api
-      - upload-api
-    networks:
-      - default
-      - php_net
-      - frp_net
-
-  dns:
-    image: strm/dnsmasq
-    restart: always
-    volumes:
-      - /mnt/config/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
-      - /mnt/config/dnsmasq/dnsmasq.d/:/etc/dnsmasq.d/
-      - /mnt/config/dnsmasq/hosts.conf:/etc/hosts.conf
-    ports:
-      - "53:53/udp"
-      - "53:53/tcp"
-    cap_add:
-      - NET_ADMIN
-    networks:
-      - dns_net
-
-# Database
-#----------------------------------
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
-    volumes:
-      - "/tmp/redis/data/:/data/"
-    ports:
-      - "6379:6379"
-    networks:
-      - redis_net
-  mongo:
-    image: mongo
-    container_name: mongo
-    restart: always
-    volumes:
-      - "/var/mongo:/data/db"
-    networks:
-      - mongo_net
-
-
-# app-level services
-# --------------------------------------
-  php-fpm:
-    container_name: php-fpm
-    image: crunchgeek/php-fpm:7.3
-    restart: always
-    volumes:
-      - "/home/:/home/"
-      - "/mnt/:/mnt/"
-    networks:
-      - php_net
-  frps:
-    image: snowdreamtech/frps
-    container_name: frps
-    restart: always
-    volumes:
-      - "/mnt/config/frp/frps.ini:/etc/frp/frps.ini"
-    ports:
-      - "4480:4480"
-      - "4443:4443"
-      - "4477:4477"
-      - "4400-4440:4400-4440"
-    networks:
-      - frp_net
-  emqx:
-    image: emqx/emqx
-    container_name: emqx
-    restart: always
-    ports:
-      - "1883:1883"
-      - "8083:8083"
-      - "8883:8883"
-      - "8084:8084"
-      - "18083:18083"
-    networks:
-      - mqtt_net
-  monitor:
-    #build: https://github.com/iotcat/ushio-monitor.git
-    image: iotcat/ushio-monitor
-    container_name: monitor
-    restart: always
-    command: USER=cn.yimian.xyz
-    network_mode: "host"
-
-
-# common apps
-# -------------------------------------
-  oneindex:
-    image: iotcat/oneindex
-    container_name: oneindex
-    restart: always
-    volumes:
-      - "/mnt/config/oneindex/:/var/www/html/config/"
-    healthcheck:
-      test: /bin/bash /healthcheck.sh
-      interval: 1m
-      timeout: 10s
-      retries: 3
-
-  session:
-    #build: https://github.com/iotcat/ushio-session.git
-    image: iotcat/ushio-session
-    container_name: session
-    restart: always
-    networks:
-      - default
-      - redis_net
-  acg.watch-api:
-    #build: https://github.com/iotcat/acg.watch-api.git
-    image: iotcat/acg.watch-api
-    container_name: acg.watch-api
-    restart: always
-    volumes:
-      - "/mnt/cache/video/:/mnt/cache/video/"
- 
-
-
-
-# local apps
-# ---------------------------------------
-  serverstatus:
-    image: cppla/serverstatus
-    container_name: serverstatus
-    restart: always
-    volumes:
-      - "/mnt/config/serverstatus/config.json:/ServerStatus/server/config.json"
-    ports:
-      - "35601:35601"
-  ushio-win-server:
-    #build: https://github.com/iotcat/ushio-win-server.git
-    image: iotcat/ushio-win-server
-    container_name: ushio-win-server
-    restart: always
-  kms:
-    #build: https://github.com/iotcat/kms-dockcer.git
-    image: iotcat/kms
-    container_name: kms
-    restart: always
-    ports:
-      - "1688:1688"
-  bingimgupdate-opt:
-    #build: https://github.com/iotcat/bingUpdateImg-opt.git
-    image: iotcat/bingimgupdate-opt
-    container_name: bingimgupdate-opt
-    restart: always
-    volumes:
-      - "/mnt/config/token/huaweicloud/:/mnt/config/token/huaweicloud/"
-      - "/tmp/:/tmp/"
-  danmaku-api:
-    #build: https://github.com/iotcat/danmaku-api.git
-    image: iotcat/danmaku-api
-    container_name: danmaku-api
-    restart: always
-    depends_on:
-      - redis
-      - mongo
-    networks:
-      - default
-      - redis_net
-      - mongo_net
-    environment:
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-      MONGO_HOST: "mongo"
-      MONGO_PORT: 27017
-      MONGO_DATABASE: "danmaku"
-    volumes:
-      - /var/log/danmaku-api/app:/usr/src/app/logs
-      - /var/log/danmaku-api/pm2:/root/.pm2/logs
-  coro-api:
-    #build: https://github.com/iotcat/coro-api.git
-    image: iotcat/coro-api
-    container_name: coro-api
-    restart: always
-  todo-ddl-api:
-    #build: https://github.com/iotcat/todo-ddl-api.git
-    image: iotcat/todo-ddl-api
-    container_name: todo-ddl-api
-    restart: always
-    volumes:
-      - "/mnt/var/todo-ddl/:/mnt/var/todo-ddl/"
-  upload-api:
-    #build: https://github.com/IoTcat/upload-api.git
-    image: iotcat/upload-api
-    container_name: upload-api
-    restart: always
-    volumes:
-      - "/mnt/config/token/huaweicloud/:/mnt/config/token/huaweicloud/"
-    tmpfs:
-      - /tmp
-
-    
-    
-# networks setting
-# ------------------------------------
-networks:
-  default:
-
-  dns_net:
-
-  redis_net:
-
-  mongo_net:
-
-  php_net:
-
-  frp_net:
-
-  mqtt_net:
+Ushio使用onedrive作为配置文件，秘钥，数据库密码，以及静态文件的存储。与此同时，Ushio使用主机磁盘存储日志文件，运行缓存等动态文件，以及对访问速度要求较高的静态文件。Ushio文件系统通用结构如下，其中，onedrive目录所有Ushio主机共享，并同步。home目录使用git作管理以及灾备，方便快速恢复。var和tmp使用系统根目录地址，存储动态文件以及缓存。
 
 ```
+|Ushio-fs
+|
+|---|onedrive (使用rclone挂载)
+|   |---config(共享配置文件)
+|   |---etc（局部配置文件）
+|   |---html
+|   |---docker（局部docker-compose.yml）
+|   
+|---|home(使用git管理)
+|   |---www (本地高速网站文件，如php)
+|   |---opt (本地非iis应用)
+|   
+|---|var
+|   |---log (本地日志)
+|   |---cache (本地缓存)
+|
+|---|tmp (临时文件)
+```
+
+## 集群内部交流
+Ushio集群通过onedrive, mqtt分布式集群,以及Kafka消息队列（待实现）进行数据交流。 
+
+
+# 服务列表
+
+## 主机列表
+
+实时列表看[这里](https://monitor.yimian.xyz)
+
+
+## 重要服务
+ - [api.yimian.xyz](https://api.yimian.xyz) 提供API
+ - log.yimian.xyz 提供日志记录接口
+ - session.yimian.xyz 提供js-session服务
+ - dns.yimian.xyz 提供dns服务
+ - [www.eee.dog](https://www.eee.dog) 提供博客服务
+ - kms.yimian.xyz 提供kms服务
+ - frp.yimian.xyz 提供内网穿透服务
+ - [onedrive.yimian.xyz](https://onedrive.yimian.xyz) 提供网盘服务
+ - shorturl.yimian.xyz 提供短链服务
+ - [img.yimian.xyz](https://img.yimian.xyz) 提供图库服务
+ - [imgbed.yimian.xyz](https://imgbed.yimian.xyz) 提供图床服务
+ - [share.yimian.xyz](https://share.yimian.xyz) 提供文件转链接服务
+ - [iotcat.me](https://iotcat.me) iotcat主页
+ - [acg.watch](https://acg.watch) acg视频网站
+ - [monitor.yimian.xyz](https://monitor.yimian.xyz) 提供服务器监视服务
+ - [mqtt.yimian.xyz](https://mqtt.yimian.xyz) 提供mqtt通信服务
+
+
+
+## 重要模块
+
+
+### ushio-nginx [iotcat/ushio-nginx](https://github.com/iotcat/ushio-nginx)
+在nginx源码基础上修改而成的反代软件，其实主要实现的效果就是使得http header中的server是`Ushio/1.16.1`。。之后如果有能力我会进一步优化nginx。
+
+### ushio-dns
+使用dnsmasq，提供dns服务。如需使用，请将您的dns主机地址修改为`114.116.85.132`,`80.251.216.25`。
+
+### redis数据库
+为本地提供高速缓存服务。
+
+### mongoDB数据库
+提供分布式文件存储。目前主要是由弹幕模块使用。
+
+### php-fpm
+使用`crunchgeek/php-fpm:7.3`镜像，提供php网络发布服务。
+
+### frps内网穿透
+为内网主机提供内网穿透服务。
+
+### emqx mqtt
+提供mqtt服务。
+
+### ushio-monitor
+基于serverstatus 提供服务器监控服务。
+详见[https://monitor.yimian.xyz](https://monitor.yimian.xyz)
+
+### oneindex
+基于oneindex提供onedrive文件发布服务。
+
+### ushio-session
+基于`iotcat/js-session`提供session服务。
+详见[iotcat/session](https://github.com/iotcat/session)
+
+
+### ushio-log
+提供日志服务。
+
+### kms
+提供windows系统kms激活服务。
+详见[iotcat/kms](https://github.com/iotcat/kms)
+
+
+### ushio-js
+提供网页端的ushio接口，提供aplayer, fp, js-session, tips灯服务。详见[iotcat/ushio-js](https://github.com/iotcat/ushio-js)
+
+
+
+
+------------------------------
+# 历史
 
 ## 系统架构（第二代）
 ```
