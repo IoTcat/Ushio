@@ -1,28 +1,30 @@
 # Ushio
-汐 - IoTcat的私人分布式信息支持系统  
+IoTcat's personal distributed information support system    
 
-## 项目由来
-Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第一工作室遭人纵火，最温柔的一群人受到了最残忍的对待。我所能做的，只有将其所传达的精神传递下去。希望借助Ushio系统，去找到真实的自己。去找到真正属于我的责任；去找到真正属于我的幸福；去找到真正值得我全力以赴的那个人，那些人。
+[简体中文（推荐）](./zh.md)
 
-## 项目定位
-汐，黄昏时刻的涌水。Ushio系统的设想是，可以分布式地弹性地部署在各种设备上，为我的开发行为提供工具集，运行环境，以及维护途径。如果说我所开发的诸种服务相互之间的依赖关系是一张蜘蛛网，那么Ushio系统就是这张网的构架者和维护者。此外，有一些Ushio接口通过API形式，向公众开发。详见[iotcat/ushio-api](https://github.com/iotcat/ushio-api)。
+## What is the meaning of Ushio
+Ushio named after the daughter of the protagonist of Clannad. On July 18, 2019, the first studio of Kyoto Animation was set on fire, and the most tender group of people received the most cruel treatment. All I can do is pass on the spirit these people conveys. I hope to find my true self with the help of Ushio system. To find the responsibility that truly belongs to me; to find the happiness that truly belongs to me; to find the person who is truly worthy of my all-out efforts.
 
-## 实现方法
+## Project positioning
+The Chinese meaning of word Ushio is the gushing water at dusk. The idea of the Ushio system is that it can be deployed on various devices in a distributed and flexible manner, providing a tool set, operating environment, and maintenance path for my development activities. If the interdependence between the various services I developed is a spider web, then the Ushio system is the architect and maintainer of this web. In addition, some Ushio interfaces are developed and shared to the public through API. See [iotcat/ushio-api](https://github.com/iotcat/ushio-api) for details.
 
-### 第一代ushio [iotcat/ushio-cn-old:old](https://github.com/IoTcat/Ushio-cn-old/tree/old)
-第一次架构完成于2019年7月，是由Ushio用户运行的，集成在cn.yimian.xyz服务器的CentOS7系统上的一系列应用程序。此时，仍然使用主机的文件系统。
+## Implementation
 
-### 第二代ushio [iotcat/ushio-linux](https://github.com/IoTcat/ushio-linux)
-第二次重构完成于2020年3月，是由Ushio用户运行的，以onedrive作为文件系统，以本机为缓存系统，有独立的系统分区和权限隔离的Linux子系统。
+### The first generation of ushio [iotcat/ushio-cn-old:old](https://github.com/IoTcat/Ushio-cn-old/tree/old)
+The first architecture was completed in July 2019. It was integrated a series of applications on the CentOS7 system of the cn.yimian.xyz server. At this time, the local file system of the host is still used.
 
-### 第三代ushio [iotcat/ushio-cn](https://github.com/iotcat/ushio-cn)
-第三次重构完成于2020年6月，是由root用户运行的，以onedrive作为文件系统，以本机为缓存系统，由docker-compose控制的docker集群。
+### The second generation ushio [iotcat/ushio-linux](https://github.com/IoTcat/ushio-linux)
+The second reconstruction was completed in March 2020. It was run by a Ushio user, with onedrive as the file system and the local storage as the cache system, with independent system partitions and a Linux subsystem with isolated permissions.
 
-### 第四代ushio
-第四次重构正在进行中，预计2020.12前完成。在第三代的基础上，使用Kubernetes和Helm取代docker-compose进行进程弹性管理，使用DroneCI和Github进行持续集成，使用Kafka进行跨区域集群的通信。
+### The third generation ushio [iotcat/ushio-cn](https://github.com/iotcat/ushio-cn)
+The third reconstruction was completed in June 2020. It was run by the root user, with onedrive as the file system, the local storage as the cache system, and a docker cluster controlled by docker-compose.
+
+### The fourth generation ushio
+The fourth reconstruction is in progress and is expected to be completed before 2020.12. On the basis of the third generation, Kubernetes and Helm are used to replace docker-compose for elastic process management, DroneCI and Github are used for continuous integration, and Kafka is used for cross-regional cluster communication.
 
 
-## 设计理念
+## Design Objective
 - Reliable
 - Fast
 - Safe
@@ -31,180 +33,175 @@ Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第�
 - OpenSource
 - Smart
 
-## 开发理念
-- 不断重构，迭代发展
-- 面向开发
-- 考虑到量子计算发展，将主要使用AES256，减少RSA使用
+## Development Method
+- Continuous reconstruction, iterative development
+- Development-oriented
+- Taking into account the development of quantum computing, AES256 will be mainly used and the use of RSA will be reduced
 
 
+# Architecture and standards
 
-# 架构及标准
+## File system
 
-## 文件系统
+Ushio uses git with git.yimian.xyz to manage configuration files, secret keys, credentials, database passwords, and static files that require high access speed. In addition, Ushio uses onedrive to store static files that take up a lot of space, such as video files. Ushio uses Huawei Cloud Storage to store shared files that require high-speed access between cross-regional clusters, such as certain data files. At the same time, Ushio uses the host disk to store log files, run caches and other dynamic files.
 
-Ushio使用git配合git.yimian.xyz管理配置文件，秘钥，凭据，数据库密码，以及对访问速度要求较高的静态文件。此外，Ushio使用onedrive存储占用空间较大的静态文件，比如视频文件等。Ushio使用Huawei Cloud Storage存储需要在跨区域集群间高速访问的共享文件，比如某些数据文件等。与此同时，Ushio使用主机磁盘存储日志文件，运行缓存等动态文件。   
-
-Ushio文件系统通用结构如下，其中，`/onedrive`目录，`/mnt/var`目录由所有Ushio主机共享，并同步。`/home`目录，`/mnt/etc`目录，`/mnt/config`目录，以及`/mnt/docker`目录使用git作管理以及灾备，方便版本控制以及快速恢复。`/var`和`/tmp`使用系统根目录地址，存储动态文件以及缓存。
+The general structure of the Ushio file system is as follows, where the `/onedrive` directory and the `/mnt/var` directory are shared and synchronized by all Ushio hosts. The `/home` directory, the `/mnt/etc` directory, the `/mnt/config` directory, and the `/mnt/docker` directory use git for management and disaster recovery, which facilitates version control and quick recovery. `/var` and `/tmp` use the system root directory address to store dynamic files and cache.
 
 ```
 |Ushio-fs
 |
-|---|onedrive (使用rclone挂载)
+|---|onedrive (mount using rclone)
 |
 |---|mnt (IoTcat/ushio-private)
-|   |---config (共享配置文件)
-|   |---etc（共享局部配置文件）
-|   |---docker（共享docker-compose配置文件）
-|   |---var (共享华为云存储)
-|   
-|---|home(使用git管理)
-|   |---www (本地高速网站文件，如php)
-|   |---opt (本地开发文件)
-|   |---lib (本地共享库)
-|   
-|---|var
-|   |---log (本地日志)
-|   |---cache (本地缓存)
+|   |---config (Shared configuration file)
+|   |---etc (shared local configuration file)
+|   |---docker (sharing docker-compose configuration file)
+|   |---var (Share Huawei Cloud Storage)
 |
-|---|tmp (临时文件)
+|---|home (with git management)
+|   |---www (local high-speed website files, such as php)
+|   |---opt (local development file)
+|   |---lib (local shared library)
+|
+|---|var
+|   |---log (local log)
+|   |---cache (local cache)
+|
+|---|tmp (temporary file)
 ```
-
-## 跨区域通信
-Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（待实现）进行数据交流。 
-
-
-# 服务列表
+## Cross-regional communication
+The Ushio cluster communicates data through Huawei cloud storage, mqtt distributed cluster, and Kafka message queue (to be implemented).
 
 
-## 主机列表
-
-实时列表看[这里](https://monitor.yimian.xyz/)     
-
-### 重要节点
-
- - `cn.yimian.xyz`: [中国区主服务器](https://github.com/IoTcat/ushio-docker/blob/master/cn.yimian.xyz/docker-compose.yml)
- - `usa.yimian.xyz`: [北美主服务器](https://github.com/IoTcat/ushio-docker/blob/master/usa.yimian.xyz/docker-compose.yml)
- - `home.yimian.xyz`: [灾备服务器](https://github.com/IoTcat/ushio-docker/blob/master/home.yimian.xyz/docker-compose.yml)
+# Service list
 
 
-## Ushio核心服务
+## Host list
 
-### 网站服务
- - [api.yimian.xyz](https://api.yimian.xyz) 提供公共API接口
- - log.yimian.xyz 提供日志记录接口
- - session.yimian.xyz 提供js-session服务
- - cdn.yimian.xyz CDN加速服务
- - image.yimian.xyz 提供图片获取服务
- - storage.yimian.xyz 提供文件缓存服务
- - danmaku.yimian.xyz 视频弹幕服务
+See the real-time list [here](https://monitor.yimian.xyz/)
 
+### Important node
 
-### 用户服务
- - [login.yimian.xyz](https://login.yimian.xyz/) 提供Ushio系统用户登录服务
- - [user.yimian.xyz](https://user.yimian.xyz/) 提供用户个人信息管理页面
- - auth.yimian.xyz 提供Ushio用户系统认证和权限管理服务
+ - `cn.yimian.xyz`: [Main Server in China](https://github.com/IoTcat/ushio-docker/blob/master/cn.yimian.xyz/docker-compose.yml)
+ - `usa.yimian.xyz`: [North American Main Server](https://github.com/IoTcat/ushio-docker/blob/master/usa.yimian.xyz/docker-compose.yml)
+ - `home.yimian.xyz`: [Disaster Recovery Server](https://github.com/IoTcat/ushio-docker/blob/master/home.yimian.xyz/docker-compose.yml)
 
 
-### 其它服务
- - dns.yimian.xyz 提供dns服务
- - frp.yimian.xyz 提供内网穿透服务
- - mqtt.yimian.xyz 提供mqtt通信服务
- - docker.yimian.xyz 提供docker镜像托管服务
- - db.yimian.xyz mysql 存储服务
- - ushio-win.yimian.xyz win系统Ushio服务通信接口
+## Ushio Core Service
+
+### Web Services
+ - [api.yimian.xyz](https://api.yimian.xyz) provides public API interface
+ - log.yimian.xyz provides logging interface
+ - session.yimian.xyz provides js-session service
+ - cdn.yimian.xyz CDN acceleration service
+ - image.yimian.xyz provides image acquisition service
+ - storage.yimian.xyz provides file caching services
+ - danmaku.yimian.xyz video barrage service
+
+
+### User Service
+ - [login.yimian.xyz](https://login.yimian.xyz/) Provide Ushio system user login service
+ - [user.yimian.xyz](https://user.yimian.xyz/) Provide user personal information management page
+ - auth.yimian.xyz provides Ushio user system authentication and authority management services
+
+
+### Other services
+ - dns.yimian.xyz provides dns service
+ - frp.yimian.xyz provides intranet penetration service
+ - mqtt.yimian.xyz provides mqtt communication services
+ - ota.yimian.xyz provides OTA service for IoT nodes
+ - docker.yimian.xyz provides docker image hosting service
+ - db.yimian.xyz mysql storage service
+ - ushio-win.yimian.xyz win system Ushio service communication interface
 
 
 
-## 依赖Ushio的服务
+## Services relying on Ushio
 
-### 公共服务
- - [kms.yimian.xyz](https://github.com/iotcat/kms) 提供kms服务
- - [shorturl.yimian.xyz](https://shorturl.yimian.xyz/) 提供短链服务
- - [acg.watch](https://acg.watch/) acg视频网站
- - [img.yimian.xyz](https://img.yimian.xyz/) 提供图库服务
- - [imgbed.yimian.xyz](https://imgbed.yimian.xyz/) 提供图床服务
- - [share.yimian.xyz](https://share.yimian.xyz/) 提供文件转链接服务
- - [v2ray.yimian.xyz](https://v2ray.yimian.xyz/) Vmess翻墙服务
- - [cp-acc.yimian.xyz](https://cp-acc.yimian.xyz/) 公共账务自动结算系统
- - [mksec.yimian.xyz](https://mksec.yimian.xyz/) 句子背单词网站
- - [proxy.yimian.xyz](https://proxy.yimian.xyz/) 提供HTTP国外文件下载加速服务
+### Public Service
+ - [kms.yimian.xyz](https://github.com/iotcat/kms) Provide kms service
+ - [shorturl.yimian.xyz](https://shorturl.yimian.xyz/) provides short-chain services
+ - [acg.watch](https://acg.watch/) acg video website
+ - [img.yimian.xyz](https://img.yimian.xyz/) Provide gallery service
+ - [imgbed.yimian.xyz](https://imgbed.yimian.xyz/) Provide image bed service
+ - [share.yimian.xyz](https://share.yimian.xyz/) Provide file transfer link service
+ - [v2ray.yimian.xyz](https://v2ray.yimian.xyz/) Vmess circumvention service
+ - [cp-acc.yimian.xyz](https://cp-acc.yimian.xyz/) Automatic public accounting system
+ - [mksec.yimian.xyz](https://mksec.yimian.xyz/) Sentence memorization website
+ - [proxy.yimian.xyz](https://proxy.yimian.xyz/) Provide HTTP foreign file download acceleration service
  
-### 私人服务
+### Private Service
 
- - [www.eee.dog](https://www.eee.dog) 提供博客服务
- - [onedrive.yimian.xyz](https://onedrive.yimian.xyz/) 提供网盘服务
- - [iotcat.me](https://iotcat.me/) iotcat主页
- - [monitor.yimian.xyz](https://monitor.yimian.xyz/) 提供服务器监视服务
- - [ushio.cool](https://ushio.cool/) 提供Ushio主页
- - [guide.yimian.xyz](https://guide.yimian.xyz/) Ushio公共公开服务导航
- - [git.yimian.xyz](https://git.yimian.xyz/) 提供iotcat的Git仓库镜像服务
- - [home.yimian.xyz](https://home.yimian.xyz/) Sola智慧家庭系统
- - [cv.yimian.xyz](https://cv.yimian.xyz/) IoTcat的网页版简历
- - [pay.yimian.xyz](https://pay.yimian.xyz/) IoTcat的支付页面
+ - [www.eee.dog](https://www.eee.dog) provides blog service
+ - [onedrive.yimian.xyz](https://onedrive.yimian.xyz/) Provide online disk service
+ - [iotcat.me](https://iotcat.me/) iotcat homepage
+ - [monitor.yimian.xyz](https://monitor.yimian.xyz/) provides server monitoring services
+ - [ushio.cool](https://ushio.cool/) Provide Ushio homepage
+ - [guide.yimian.xyz](https://guide.yimian.xyz/) Ushio public service navigation
+ - [git.yimian.xyz](https://git.yimian.xyz/) Provide iotcat's Git warehouse mirroring service
+ - [home.yimian.xyz](https://home.yimian.xyz/) Sola Smart Home System
+ - [cv.yimian.xyz](https://cv.yimian.xyz/) IoTcat's web version resume
+ - [pay.yimian.xyz](https://pay.yimian.xyz/) IoTcat payment page
 
 
 
-## 重要模块
+## Important modules
 
 
 ### ushio-session
-基于`iotcat/js-session`提供session服务。
-详见[iotcat/session](https://github.com/iotcat/session)
+Provide session service based on `iotcat/js-session`.
+See [iotcat/session](https://github.com/iotcat/session) for details
 
 ### ushio-js
-提供网页端的ushio接口，提供aplayer, fp, js-session, tips灯服务。详见[iotcat/ushio-js](https://github.com/iotcat/ushio-js)
+Provide the ushio interface on the web side, and provide aplayer, fp, js-session, tips light services. See [iotcat/ushio-js](https://github.com/iotcat/ushio-js) for details
 
-### ushio-nginx [iotcat/ushio-nginx](https://github.com/iotcat/ushio-nginx)
-在nginx源码基础上修改而成的反代软件，其实主要实现的效果就是使得http header中的server是`Ushio/1.16.1`。。之后如果有能力我会进一步优化nginx。
+### ushio-nginx
+The anti-generation software modified on the basis of nginx source code, in fact, the main effect is to make the server in the http header be `Ushio/1.16.1`. . I will further optimize nginx if I can. See [iotcat/ushio-nginx](https://github.com/iotcat/ushio-nginx) for details
 
 ### ushio-dns
-使用dnsmasq，提供dns服务。如需使用，请将您的dns主机地址修改为`114.116.85.132`,`80.251.216.25`。
+Use dnsmasq to provide dns services. If you need to use it, please modify your dns host address to `114.116.85.132`, `80.251.216.25`.
 
-### redis数据库
-为本地提供高速缓存服务。
+### redis database
+Provide caching services locally.
 
-### mongoDB数据库
-提供分布式文件存储。目前主要是由弹幕模块使用。
+### mongoDB database
+Provide distributed file storage. Currently it is mainly used by the barrage module.
 
 ### php-fpm
-使用`crunchgeek/php-fpm:7.3`镜像，提供php网络发布服务。
+Use the `crunchgeek/php-fpm:7.3` mirror to provide php web publishing services.
 
-### frps内网穿透
-为内网主机提供内网穿透服务。
+### frps intranet penetration
+Provide intranet penetration services for intranet hosts.
 
 ### emqx mqtt
-提供mqtt服务。
+Provide mqtt service.
 
 ### ushio-monitor
-基于serverstatus 提供服务器监控服务。
-详见[https://monitor.yimian.xyz](https://monitor.yimian.xyz)
+Provide server monitoring service based on serverstatus.
+See [https://monitor.yimian.xyz](https://monitor.yimian.xyz) for details
 
 ### oneindex
-基于oneindex提供onedrive文件发布服务。
+Provide onedrive file publishing service based on oneindex.
 
 
 ### ushio-log
-提供日志服务。
+Provide log service.
 
 
 
-# 部署方法
+# Deployment method
 
 
-## 脚本部署
+## Script deployment
 
-目前支持CentOS7的一键脚本部署。实现了可以自动化和无人值守的扩展服务器。比如，如果需要，我现在可以在十分钟内（前提网络好）新填一台日本或其他国家的Ushio服务器，并开始提供服务。脚本详见[iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
-
-
-
+Currently supports one-click script deployment of CentOS7. Realize the expansion server that can be automated and unattended. For example, if necessary, I can now fill in a new Ushio server in Japan or other countries within ten minutes (provided that the network is good) and start providing services. For the script, please refer to [iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
 
 ------------------------------
 
 ---------------------------------
+# History
 
-# 历史
-
-## 系统架构（第二代）
+## System architecture (second generation)
 ```
 |Ushio
 |
@@ -250,7 +247,7 @@ Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（
 |   |---resume.yimian.xyz
 |   |---iot.yimian.xyz
 |   |---settlement.yimian.xyz
-|   |---ques.yimian.xyz(问卷系统)
+|   |---ques.yimian.xyz (questionnaire system)
 |   |---vpn.yimian.xyz
 |   |---data.yimian.xyz
 |   |---ai.yimian.xyz
@@ -264,81 +261,81 @@ Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（
 
 ```
 
-## 系统架构（第一代）
+## System architecture (first generation)
 ```
 |Ushio
 |
 |---|iis
 |   |
-|   |---Blog(博客，记录生活，引导)=SEO(搜索引擎收录)
+|   |---Blog (blog, record life, guide)=SEO (indexed by search engines)
 |   |   |
-|   |   |---YimianReading(追番/阅读记录)
-|   |   |---YimianYulu(记录自己的中二语录)
-|   |   |---WeiBlog(类似说说)
-|   |   |---YimianDev(开发记录)
-|   |   |---留言板
+|   |   |---YimianReading (Chasing Fan/Reading Record)
+|   |   |---YimianYulu (Record your own secondary quotations)
+|   |   |---WeiBlog (similar to talk)
+|   |   |---YimianDev (Development Record)
+|   |   |---Message Board
 |   |   |---RSS
-|   |   |---笔记存档系统
+|   |   |---Note Archive System
 |   |
-|   |---HomePage(主页，引导作用)=SEO
+|   |---HomePage (home page, guiding role)=SEO
 |   |   |
-|   |   |---YimianGuide(导航页)
-|   |   |---私人pc浏览器主页
-|   |   |---私人phone浏览器主页
-|   |   |---Resume(简历)
+|   |   |---YimianGuide(Navigation page)
+|   |   |----Private pc browser homepage
+|   |   |----Private phone browser homepage
+|   |   |---Resume
 |   |
-|   |---ACG.WATCH(收藏的动漫，电影，电视剧等视频)=SEO
+|   |---ACG.WATCH (collection of animation, movies, TV series and other videos)=SEO
 |   |   |
-|   |   |---珍藏的蓝光动漫/视频
-|   |   |---国内被禁的神作(与b站互补)
+|   |   |---Collection of Blu-ray Animation/Video
+|   |   |----The banned masterpiece in China (complementary with station b)
 |   |
 |   |---OVO.RE(图床)=SEO
-|   |---YimianMsc(跨域不间断网页音乐服务)(基于网易云音乐)
-|   |---YimianCloud(私人网盘+公共分享)(分布式)(内网+外网)
-|   |---iot(物联相关)
+|   |---YimianMsc (cross-domain uninterrupted web music service) (based on NetEase Cloud Music)
+|   |---YimianCloud (private network disk + public sharing) (distributed) (intranet + external network)
+|   |---iot (Internet of Things)
 |   |   |
-|   |   |---电子器件管理系统
+|   |   |----Electronic Device Management System
 |   |
-|   |---YimianQues(简易的问卷系统)
-|   |---YimianPC(笔记本上的简易系统，方便内网/外网访问与文件共享)
-|   |---YimianData(提供简易的大数据展示功能)
-|   |---YimianChat(简易的在线聊天平台)
-|   |---UshioFee(Ushio运行累计耗资统计)
-|   |---YimianSSR(翻墙服务管理界面)
+|   |---YimianQues (simple questionnaire system)
+|   |---YimianPC (simple system on notebook, convenient for intranet/extranet access and file sharing)
+|   |---YimianData (Provide simple big data display function)
+|   |---YimianChat (simple online chat platform)
+|   |---UshioFee (Ushio running cumulative cost statistics)
+|   |---YimianSSR (over the wall service management interface)
 |
-|---|login(用户管理系统)
+|---|login (user management system)
 |   |
-|   |---iis(注册，登录，找回密码页面)
-|   |---临时用户系统(随机/QQ/微信/google)
+|   |---iis (register, log in, retrieve password page)
+|   |---Temporary user system (random/QQ/WeChat/google)
 |
-|---|ssr/vpn(代理，辅助提供翻墙服务)
+|---|ssr/vpn (agent, assist in providing circumvention services)
 |
-|---|frp(内网穿透服务)
+|---|frp (Intranet penetration service)
 |
 |---|iot
 |   |
-|   |---ota(固件更新服务)
+|   |---ota (firmware update service)
 |   |---MQTT
 |
 |---|storage
 |   |
-|   |---SQL(表单，日志)
-|   |---NoSQL(网站缓存，视频系列信息)
-|   |---对象存储(速度敏感的大文件)
-|   |---onedrive(大文件，与yimianPC同步)
+|   |---SQL (form, log)
+|   |---NoSQL (website cache, video series information)
+|   |---Object storage (speed-sensitive large files)
+|   |---onedrive (large files, synchronized with yimianPC)
 |
 |---|API
 |   |
 |   |---mail
 |   |---sms
-|   |---咕咕机
-|   |---pic/moe(图片)
-|   |---一言
-|   |---dans(弹幕服务)
-|   |---图片压制/剪切
-|   |---视频压制/转码
-|   |---翻译(google translate)
-|   |---搜索(站内搜索+综合google)
+|   |---Cuckoo machine
+|   |---pic/moe(picture)
+|   |---One word
+|   |---dans (Barrage Service)
+|   |---Picture suppression/cutting
+|   |---Video suppression/transcoding
+|   |---Translation (google translate)
+|   |---Search (site search + comprehensive google)
 |
 |---|pay
 |   |
@@ -349,83 +346,83 @@ Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（
 |
 |---|ai
 |   |
-|   |---wiot自定义训练模型
-|   |---用户分类(投其所好推送内容)
-|   |---简易的聊天机器人
+|   |---wiot custom training model
+|   |---User classification (to push content according to their preferences)
+|   |---Simple chat robot
 |
-|---|game(游戏服务器)
+|---|game (game server)
 |   |
-|   |---战地2
-|   |---红色警戒2尤里复仇
-|   |---模拟城市5
+|   |---Battlefield 2
+|   |---Red Alert 2 Yuri's Revenge
+|   |---Sim City 5
 |
-|---|log(日志系统)
+|---|log (log system)
 |   |
-|   |---系统日志
-|   |---iis访问日志
-|   |---蜘蛛访问日志
-|   |---api访问日志
+|   |---System Log
+|   |---iis access log
+|   |---Spider access log
+|   |---api access log
 |
-|---|monitor(监视/控制系统)
+|---|monitor (monitoring/control system)
 |   |
-|   |---iis(相关服务异常时自动引导用户至指定页面，防止google惩罚，同时向站长警告)
-|   |---控制各服务开关状态
-|   |---证书管理(自动续费)
+|   |---iis (Automatically guide users to the specified page when related services are abnormal, to prevent Google from penalizing, and warn the webmaster at the same time)
+|   |---Control the status of each service switch
+|   |---Certificate management (automatic renewal)
 |
-|---|backup(备份系统)
+|---|backup (backup system)
 |   |
-|   |---github备份
-|   |---YimianPC文件备份
-|   |---YimianPhone文件备份
-|   |---数据库备份
-|   |---服务器系统镜像备份
+|   |---github backup
+|   |---YimianPC file backup
+|   |---YimianPhone file backup
+|   |---Database backup
+|   |---Server system mirror backup
 |
-|---|report(报表系统)
+|---|report (report system)
 |   |
-|   |---站点每日概况
+|   |---Site daily overview
 |
 |
 ```
 
-## 核心依赖
+## Core dependencies
 
-- [CentOS7.6](https://www.centos.org/) 使用CentOS作为操作系统
-- [nodeJS](https://github.com/nodejs/node) 使用NodeJS驱动系统
-- [php](https://github.com/php/php-src) 使用php搭建iis服务端
-- [python](https://github.com/python/cpython) 使用python进行后端数据处理
-- [nginx](https://github.com/nginx/njs) 改装nginx作为代理
-- [fp](https://github.com/IoTcat/fp) 精确识别用户设备
-- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-libev) 流量代理系统
-- [typecho](https://github.com/typecho/typecho) 博客框架
-- [jquery](https://github.com/jquery/jquery) js网页开发工具
-- [dplayer](https://github.com/MoePlayer/DPlayer) 开源弹幕视频播放器
-- [aplayer](https://github.com/MoePlayer/APlayer) 开源音乐播放器
-- [rsshub](https://github.com/DIYgod/RSSHub) 提供丰富的rss源
-- [frp](https://github.com/fatedier/frp) 提供内网穿透
-- [docute](https://github.com/egoist/docute) 快速开发说明文档
-- [handsome](https://github.com/ihewro/typecho-theme-handsome) typecho博客主题
-- [DPlayer-node](https://github.com/MoePlayer/DPlayer-node) 弹幕后端
+ CentOS7.6](https://www.centos.org/) Use CentOS as the operating system
+- [nodeJS](https://github.com/nodejs/node) Use NodeJS to drive the system
+- [php](https://github.com/php/php-src) Use php to build iis server
+- [python](https://github.com/python/cpython) Use python for back-end data processing
+- [nginx](https://github.com/nginx/njs) Modified nginx as a proxy
+- [fp](https://github.com/IoTcat/fp) accurately identify user equipment
+- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-libev) Traffic proxy system
+- [typecho](https://github.com/typecho/typecho) blog framework
+- [jquery](https://github.com/jquery/jquery) js web development tool
+- [dplayer](https://github.com/MoePlayer/DPlayer) open source barrage video player
+- [aplayer](https://github.com/MoePlayer/APlayer) Open source music player
+- [rsshub](https://github.com/DIYgod/RSSHub) Provide rich rss source
+- [frp](https://github.com/fatedier/frp) Provide intranet penetration
+- [docute](https://github.com/egoist/docute) Quick development documentation
+- [handsome](https://github.com/ihewro/typecho-theme-handsome) typecho blog theme
+- [DPlayer-node](https://github.com/MoePlayer/DPlayer-node) Barrage backend
 
-## 使用的服务
+## Services used
 
-- 华为云 CDN
-- 华为云 对象存储
-- 华为云 分布式缓存 Redis
-- 华为云 云数据库 RDS
-- 华为云 弹性云服务器 ECS
-- 腾讯云 域名解析
-- 腾讯云 云通信 短信
-- 腾讯云 域名解析
-- 腾讯云 CDN
-- 腾讯云 云服务器
-- 腾讯云 无服务器云函数
-- 腾讯 企业邮箱
-- 阿里云 轻量应用服务器
-- 阿里云 邮件推送
-- Github 代码托管服务
+- Huawei Cloud CDN
+- Huawei Cloud Object Storage
+- HUAWEI CLOUD Distributed Cache Redis
+- HUAWEI CLOUD cloud database RDS
+- HUAWEI CLOUD Elastic Cloud Server ECS
+- Tencent Cloud Domain Name Resolution
+- Tencent Cloud Cloud Communication SMS
+- Tencent Cloud Domain Name Resolution
+- Tencent Cloud CDN
+- Tencent Cloud Cloud Server
+- Tencent Cloud Serverless Cloud Functions
+- Tencent Enterprise Email
+- Alibaba Cloud Lightweight Application Server
+- Alibaba Cloud Email Push
+- Github code hosting service
 - Vultr VPS
-- Godaddy 域名管理
-- internetbs 域名管理
-- UptimeRobot iis监视服务
-- onedrive 文件存储服务
-- GoogleAnalytics 站点访问统计
+- Godaddy domain name management
+- internetbs domain name management
+- UptimeRobot iis monitoring service
+- onedrive file storage service
+- GoogleAnalytics site visit statistics
