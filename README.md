@@ -1,5 +1,5 @@
 # Ushio
-汐 - 分布式信息支持系统  
+汐 - IoTcat的私人分布式信息支持系统  
 
 ## 项目由来
 Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第一工作室遭人纵火，最温柔的一群人受到了最残忍的对待。我所能做的，只有将其所传达的精神传递下去。希望借助Ushio系统，去找到真实的自己。去找到真正属于我的责任；去找到真正属于我的幸福；去找到真正值得我全力以赴的那个人，那些人。
@@ -18,10 +18,8 @@ Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第�
 ### 第三代ushio [iotcat/ushio-cn](https://github.com/iotcat/ushio-cn)
 第三次重构完成于2020年6月，是由root用户运行的，以onedrive作为文件系统，以本机为缓存系统，由docker-compose控制的docker集群。
 
-
-## 一键部署
-
-目前支持CentOS7的一键脚本部署。实现了可以自动化和无人值守的扩展服务器。比如，如果需要，我现在可以在十分钟内（前提网络好）新填一台日本或其他国家的Ushio服务器，并开始提供服务。脚本详见[iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
+### 第四代ushio
+第四次重构正在进行中，预计2020.12前完成。在第三代的基础上，使用Kubernetes和Helm取代docker-compose进行进程弹性管理，使用DroneCI和Github进行持续集成，使用Kafka进行跨区域集群的通信。
 
 
 ## 设计理念
@@ -33,27 +31,36 @@ Ushio 汐 - 取名源自日漫Clannad主人公的女儿。2019.7.18京阿尼第�
 - OpenSource
 - Smart
 
-## 观点
- - 考虑到量子计算发展，将主要使用AES256，减少RSA使用
+## 开发理念
+- 不断重构，迭代发展
+- 面向开发
+- 考虑到量子计算发展，将主要使用AES256，减少RSA使用
+
+
 
 # 架构及标准
 
 ## 文件系统
 
-Ushio使用onedrive作为配置文件，秘钥，数据库密码，以及静态文件的存储。与此同时，Ushio使用主机磁盘存储日志文件，运行缓存等动态文件，以及对访问速度要求较高的静态文件。Ushio文件系统通用结构如下，其中，onedrive目录所有Ushio主机共享，并同步。home目录使用git作管理以及灾备，方便快速恢复。var和tmp使用系统根目录地址，存储动态文件以及缓存。
+Ushio使用git配合git.yimian.xyz管理配置文件，秘钥，凭据，数据库密码，以及对访问速度要求较高的静态文件。此外，Ushio使用onedrive存储占用空间较大的静态文件，比如视频文件等。Ushio使用Huawei Cloud Storage存储需要在跨区域集群间高速访问的共享文件，比如某些数据文件等。与此同时，Ushio使用主机磁盘存储日志文件，运行缓存等动态文件。   
+
+Ushio文件系统通用结构如下，其中，`/onedrive`目录，`/mnt/var`目录由所有Ushio主机共享，并同步。`/home`目录，`/mnt/etc`目录，`/mnt/config`目录，以及`/mnt/docker`目录使用git作管理以及灾备，方便版本控制以及快速恢复。`/var`和`/tmp`使用系统根目录地址，存储动态文件以及缓存。
 
 ```
 |Ushio-fs
 |
 |---|onedrive (使用rclone挂载)
-|   |---config(共享配置文件)
-|   |---etc（局部配置文件）
-|   |---html
-|   |---docker（局部docker-compose.yml）
+|
+|---|mnt (IoTcat/ushio-private)
+|   |---config (共享配置文件)
+|   |---etc（共享局部配置文件）
+|   |---docker（共享docker-compose配置文件）
+|   |---var (共享华为云存储)
 |   
 |---|home(使用git管理)
 |   |---www (本地高速网站文件，如php)
-|   |---opt (本地非iis应用)
+|   |---opt (本地开发文件)
+|   |---lib (本地共享库)
 |   
 |---|var
 |   |---log (本地日志)
@@ -62,39 +69,90 @@ Ushio使用onedrive作为配置文件，秘钥，数据库密码，以及静态�
 |---|tmp (临时文件)
 ```
 
-## 集群内部交流
-Ushio集群通过onedrive, mqtt分布式集群,以及Kafka消息队列（待实现）进行数据交流。 
+## 跨区域通信
+Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（待实现）进行数据交流。 
 
 
 # 服务列表
 
+
 ## 主机列表
 
-实时列表看[这里](https://monitor.yimian.xyz)
+实时列表看[这里](https://monitor.yimian.xyz/)     
+
+### 重要节点
+
+ - `cn.yimian.xyz`: [中国区主服务器](https://github.com/IoTcat/ushio-docker/blob/master/cn.yimian.xyz/docker-compose.yml)
+ - `usa.yimian.xyz`: [北美主服务器](https://github.com/IoTcat/ushio-docker/blob/master/usa.yimian.xyz/docker-compose.yml)
+ - `home.yimian.xyz`: [灾备服务器](https://github.com/IoTcat/ushio-docker/blob/master/home.yimian.xyz/docker-compose.yml)
 
 
-## 重要服务
- - [api.yimian.xyz](https://api.yimian.xyz) 提供API
+## Ushio核心服务
+
+### 网站服务
+ - [api.yimian.xyz](https://api.yimian.xyz) 提供公共API接口
  - log.yimian.xyz 提供日志记录接口
  - session.yimian.xyz 提供js-session服务
+ - cdn.yimian.xyz CDN加速服务
+ - image.yimian.xyz 提供图片获取服务
+ - storage.yimian.xyz 提供文件缓存服务
+ - danmaku.yimian.xyz 视频弹幕服务
+
+
+### 用户服务
+ - [login.yimian.xyz](https://login.yimian.xyz/) 提供Ushio系统用户登录服务
+ - [user.yimian.xyz](https://user.yimian.xyz/) 提供用户个人信息管理页面
+ - auth.yimian.xyz 提供Ushio用户系统认证和权限管理服务
+
+
+### 其它服务
  - dns.yimian.xyz 提供dns服务
- - [www.eee.dog](https://www.eee.dog) 提供博客服务
- - kms.yimian.xyz 提供kms服务
  - frp.yimian.xyz 提供内网穿透服务
- - [onedrive.yimian.xyz](https://onedrive.yimian.xyz) 提供网盘服务
- - shorturl.yimian.xyz 提供短链服务
- - [img.yimian.xyz](https://img.yimian.xyz) 提供图库服务
- - [imgbed.yimian.xyz](https://imgbed.yimian.xyz) 提供图床服务
- - [share.yimian.xyz](https://share.yimian.xyz) 提供文件转链接服务
- - [iotcat.me](https://iotcat.me) iotcat主页
- - [acg.watch](https://acg.watch) acg视频网站
- - [monitor.yimian.xyz](https://monitor.yimian.xyz) 提供服务器监视服务
  - mqtt.yimian.xyz 提供mqtt通信服务
+ - docker.yimian.xyz 提供docker镜像托管服务
+ - db.yimian.xyz mysql 存储服务
+ - ushio-win.yimian.xyz win系统Ushio服务通信接口
+
+
+
+## 依赖Ushio的服务
+
+### 公共服务
+ - [kms.yimian.xyz](https://github.com/iotcat/kms) 提供kms服务
+ - [shorturl.yimian.xyz](https://shorturl.yimian.xyz/) 提供短链服务
+ - [acg.watch](https://acg.watch/) acg视频网站
+ - [img.yimian.xyz](https://img.yimian.xyz/) 提供图库服务
+ - [imgbed.yimian.xyz](https://imgbed.yimian.xyz/) 提供图床服务
+ - [share.yimian.xyz](https://share.yimian.xyz/) 提供文件转链接服务
+ - [v2ray.yimian.xyz](https://v2ray.yimian.xyz/) Vmess翻墙服务
+ - [cp-acc.yimian.xyz](https://cp-acc.yimian.xyz/) 公共账务自动结算系统
+ - [mksec.yimian.xyz](https://mksec.yimian.xyz/) 句子背单词网站
+ - [proxy.yimian.xyz](https://proxy.yimian.xyz/) 提供HTTP国外文件下载加速服务
+ 
+### 私人服务
+
+ - [www.eee.dog](https://www.eee.dog) 提供博客服务
+ - [onedrive.yimian.xyz](https://onedrive.yimian.xyz/) 提供网盘服务
+ - [iotcat.me](https://iotcat.me/) iotcat主页
+ - [monitor.yimian.xyz](https://monitor.yimian.xyz/) 提供服务器监视服务
+ - [ushio.cool](https://ushio.cool/) 提供Ushio主页
+ - [guide.yimian.xyz](https://guide.yimian.xyz/) Ushio公共公开服务导航
+ - [git.yimian.xyz](https://git.yimian.xyz/) 提供iotcat的Git仓库镜像服务
+ - [home.yimian.xyz](https://home.yimian.xyz/) Sola智慧家庭系统
+ - [cv.yimian.xyz](https://cv.yimian.xyz/) IoTcat的网页版简历
+ - [pay.yimian.xyz](https://pay.yimian.xyz/) IoTcat的支付页面
 
 
 
 ## 重要模块
 
+
+### ushio-session
+基于`iotcat/js-session`提供session服务。
+详见[iotcat/session](https://github.com/iotcat/session)
+
+### ushio-js
+提供网页端的ushio接口，提供aplayer, fp, js-session, tips灯服务。详见[iotcat/ushio-js](https://github.com/iotcat/ushio-js)
 
 ### ushio-nginx [iotcat/ushio-nginx](https://github.com/iotcat/ushio-nginx)
 在nginx源码基础上修改而成的反代软件，其实主要实现的效果就是使得http header中的server是`Ushio/1.16.1`。。之后如果有能力我会进一步优化nginx。
@@ -124,26 +182,26 @@ Ushio集群通过onedrive, mqtt分布式集群,以及Kafka消息队列（待实�
 ### oneindex
 基于oneindex提供onedrive文件发布服务。
 
-### ushio-session
-基于`iotcat/js-session`提供session服务。
-详见[iotcat/session](https://github.com/iotcat/session)
-
 
 ### ushio-log
 提供日志服务。
 
-### kms
-提供windows系统kms激活服务。
-详见[iotcat/kms](https://github.com/iotcat/kms)
 
 
-### ushio-js
-提供网页端的ushio接口，提供aplayer, fp, js-session, tips灯服务。详见[iotcat/ushio-js](https://github.com/iotcat/ushio-js)
+# 部署方法
+
+
+## 脚本部署
+
+目前支持CentOS7的一键脚本部署。实现了可以自动化和无人值守的扩展服务器。比如，如果需要，我现在可以在十分钟内（前提网络好）新填一台日本或其他国家的Ushio服务器，并开始提供服务。脚本详见[iotcat/ushio-centos-ini](https://github.com/IoTcat/ushio-centos-ini)
 
 
 
 
 ------------------------------
+
+---------------------------------
+
 # 历史
 
 ## 系统架构（第二代）
