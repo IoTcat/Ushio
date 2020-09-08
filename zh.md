@@ -92,29 +92,31 @@ Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（
 ## Ushio核心服务
 
 ### 网站服务
- - [api.yimian.xyz](https://api.yimian.xyz) 提供公共API接口
- - log.yimian.xyz 提供日志记录接口
- - session.yimian.xyz 提供js-session服务
- - cdn.yimian.xyz CDN加速服务
- - image.yimian.xyz 提供图片获取服务
- - storage.yimian.xyz 提供文件缓存服务
- - danmaku.yimian.xyz 视频弹幕服务
+ - [api.yimian.xyz](https://api.yimian.xyz): 提供公共API接口
+ - `log.yimian.xyz`: 提供日志记录接口
+ - `session.yimian.xyz`: 提供js-session服务
+ - `cdn.yimian.xyz`: CDN加速服务
+ - `image.yimian.xyz`: 提供图片获取服务
+ - `storage.yimian.xyz`: 提供文件缓存服务
+ - `danmaku.yimian.xyz`: 视频弹幕服务
 
 
 ### 用户服务
- - [login.yimian.xyz](https://login.yimian.xyz/) 提供Ushio系统用户登录服务
- - [user.yimian.xyz](https://user.yimian.xyz/) 提供用户个人信息管理页面
- - auth.yimian.xyz 提供Ushio用户系统认证和权限管理服务
+ - [login.yimian.xyz](https://login.yimian.xyz/): 提供Ushio系统用户登录服务
+ - [user.yimian.xyz](https://user.yimian.xyz/): 提供用户个人信息管理页面
+ - `auth.yimian.xyz`: 提供Ushio用户系统认证和权限管理服务
+
+### IoT服务
+ - `mqtt.yimian.xyz`: 提供mqtt通信服务
+ - `ota.yimian.xyz`: 为IoT节点提供OTA服务
 
 
 ### 其它服务
- - dns.yimian.xyz 提供dns服务
- - frp.yimian.xyz 提供内网穿透服务
- - mqtt.yimian.xyz 提供mqtt通信服务
- - ota.yimian.xyz 为IoT节点提供OTA服务
- - docker.yimian.xyz 提供docker镜像托管服务
- - db.yimian.xyz mysql 存储服务
- - ushio-win.yimian.xyz win系统Ushio服务通信接口
+ - `dns.yimian.xyz`: 提供dns服务
+ - `frp.yimian.xyz`: 提供内网穿透服务
+ - `docker.yimian.xyz`: 提供docker镜像托管服务
+ - `db.yimian.xyz`: mysql 存储服务
+ - `ushio-win.yimian.xyz`: win系统Ushio服务通信接口
 
 
 
