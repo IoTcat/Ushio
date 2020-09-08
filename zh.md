@@ -111,6 +111,7 @@ Ushio集群通过华为云存储, mqtt分布式集群,以及Kafka消息队列（
  - dns.yimian.xyz 提供dns服务
  - frp.yimian.xyz 提供内网穿透服务
  - mqtt.yimian.xyz 提供mqtt通信服务
+ - ota.yimian.xyz 为IoT节点提供OTA服务
  - docker.yimian.xyz 提供docker镜像托管服务
  - db.yimian.xyz mysql 存储服务
  - ushio-win.yimian.xyz win系统Ushio服务通信接口
