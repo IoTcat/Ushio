@@ -90,29 +90,30 @@ See the real-time list [here](https://monitor.yimian.xyz/)
 ## Ushio Core Service
 
 ### Web Services
- - [api.yimian.xyz](https://api.yimian.xyz) provides public API interface
- - log.yimian.xyz provides logging interface
- - session.yimian.xyz provides js-session service
- - cdn.yimian.xyz CDN acceleration service
- - image.yimian.xyz provides image acquisition service
- - storage.yimian.xyz provides file caching services
- - danmaku.yimian.xyz video barrage service
+ - [api.yimian.xyz](https://api.yimian.xyz): provides public API interface
+ - `log.yimian.xyz`: provides logging interface
+ - `session.yimian.xyz`: provides js-session service
+ - `cdn.yimian.xyz`: CDN acceleration service
+ - `image.yimian.xyz`: provides image acquisition service
+ - `storage.yimian.xyz`: provides file caching services
+ - `danmaku.yimian.xyz`: video barrage service
 
 
-### User Service
- - [login.yimian.xyz](https://login.yimian.xyz/) Provide Ushio system user login service
- - [user.yimian.xyz](https://user.yimian.xyz/) Provide user personal information management page
- - auth.yimian.xyz provides Ushio user system authentication and authority management services
+### User Services
+ - [login.yimian.xyz](https://login.yimian.xyz/): Provide Ushio system user login service
+ - [user.yimian.xyz](https://user.yimian.xyz/): Provide user personal information management page
+ - `auth.yimian.xyz`: provides Ushio user system authentication and authority management services
 
+### IoT Services
+ - `mqtt.yimian.xyz`: provides mqtt communication services
+ - `ota.yimian.xyz`: provides OTA service for IoT nodes
 
 ### Other services
- - dns.yimian.xyz provides dns service
- - frp.yimian.xyz provides intranet penetration service
- - mqtt.yimian.xyz provides mqtt communication services
- - ota.yimian.xyz provides OTA service for IoT nodes
- - docker.yimian.xyz provides docker image hosting service
- - db.yimian.xyz mysql storage service
- - ushio-win.yimian.xyz win system Ushio service communication interface
+ - `dns.yimian.xyz`: provides dns service
+ - `frp.yimian.xyz`: provides intranet penetration service
+ - `docker.yimian.xyz`: provides docker image hosting service
+ - `db.yimian.xyz`: mysql storage service
+ - `ushio-win.yimian.xyz`: win systemd Ushio service communication interface
 
 
 
