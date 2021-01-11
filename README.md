@@ -120,7 +120,6 @@ See the real-time list [here](https://monitor.yimian.xyz/)
 ## Services relying on Ushio
 
 ### Public Service
- - [kms.yimian.xyz](https://github.com/iotcat/kms) Provide kms service
  - [shorturl.yimian.xyz](https://shorturl.yimian.xyz/) provides short-chain services
  - [acg.watch](https://acg.watch/) acg video website
  - [img.yimian.xyz](https://img.yimian.xyz/) Provide gallery service
